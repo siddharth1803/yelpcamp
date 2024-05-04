@@ -1,9 +1,11 @@
 const mongoose = require('mongoose');
+require("dotenv").config()
 const cities = require('./cities');
-const { places, descriptors, images } = require('./seedHelpers');
+const { places, descriptors, images, descriptions } = require('./seedHelpers');
 const Campground = require("../models/campground")
-
-mongoose.connect('mongodb://localhost:27017/yelp-camp',).then(() => {
+const uri = `mongodb+srv://${process.env.ATLAS_USER}:${process.env.ATLAS_PASS}@cluster0.janse90.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0/yelp-camp`;
+// const uri='mongodb://localhost:27017/yelp-camp'
+mongoose.connect(uri).then(() => {
     console.log("connected to db")
 }).catch((error) => {
     console.error("Error connecting to MongoDB:", error);
@@ -14,15 +16,15 @@ const sample = array => array[Math.floor(Math.random() * array.length)];
 
 const seedDB = async () => {
     await Campground.deleteMany({});
-    for (let i = 0; i < 100; i++) {
+    for (let i = 0; i < 250; i++) {
         const random1000 = Math.floor(Math.random() * 1000);
-        const random6 = Math.floor(Math.random() * 6);
+        const random6 = Math.floor(Math.random() * images.length);
         const price = Math.floor(Math.random() * 20) + 10;
         const camp = new Campground({
-            author: "66332cf2a5359714c0b51b92",
+            author: "663627c7b63cde45b89839fe",
             location: `${cities[random1000].city}, ${cities[random1000].state}`,
             title: `${sample(descriptors)} ${sample(places)}`,
-            description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quibusdam dolores vero perferendis laudantium, consequuntur voluptatibus nulla architecto, sit soluta esse iure sed labore ipsam a cum nihil atque molestiae deserunt!',
+            description: sample(descriptions),
             price,
             geometry: {
                 type: "Point",
