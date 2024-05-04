@@ -6,7 +6,6 @@ const geoCoder = mbxGeocoding({ accessToken: mapBoxToken })
 
 module.exports.index = async (req, res) => {
     let campgrounds = await Campground.find()
-    console.log(campgrounds)
     res.render("campgrounds/index", { campgrounds })
 }
 

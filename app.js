@@ -31,17 +31,17 @@ mongoose.connect(uri).then(() => {
 })
 
 const store = MongoStore.create({
-    mongoUrl: "mongodb://localhost:27017/yelp-camp",
+    mongoUrl: uri,
     touchAfter: 24 * 60 * 60,
     crypto: {
-        secret: 'thisshouldbeabettersecret!'
+        secret: process.env.SESSION_SECRET
     }
 });
 
 
 const sessionConfig = {
     store,
-    secret: "this is a secret",
+    secret: process.env.COOKIE_SECRET,
     resave: false,
     saveUninitialized: true,
     cookie: {
