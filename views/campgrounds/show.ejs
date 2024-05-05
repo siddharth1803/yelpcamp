@@ -2,12 +2,12 @@
 
     <link rel="stylesheet" href="/css/stars.css">
     <div class="row mt-5">
-        <div class="col-6">
+        <div class="col-6 ">
             <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
-                <div class="carousel-inner">
+                <div class="carousel-inner ">
                     <% campground.images.forEach((img, i)=> { %>
                         <div class="carousel-item <%= i === 0 ? 'active' : ''%>">
-                            <img src="<%= img.indexImage%>" class="d-block w-100" alt="">
+                            <img src="<%= img.campImage%>" class="d-block w-100" alt="">
                         </div>
                         <% }) %>
                 </div>
@@ -37,9 +37,12 @@
                     <li class="list-group-item text-muted">
                         <%= campground.location%>
                     </li>
-                    <li class="list-group-item">Author: <%= campground.author.username%>
+                    <li class="list-group-item">Author: <a
+                            href="/campgrounds/getCampgroundsByUser/<%= campground.author.username%>/1">
+                            <%= campground.author.username%>
+                        </a>
                     </li>
-                    <li class="list-group-item">$<%= campground.price%>/night</li>
+                    <li class="list-group-item"> &#8377 <%= campground.price%>/night</li>
                 </ul>
                 <div class="card-body">
                     <% if(currentUser && campground.author.equals(currentUser._id)){ %>

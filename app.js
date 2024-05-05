@@ -52,7 +52,7 @@ const sessionConfig = {
     }
 }
 
-// app.use(helmet({ contentSecurityPolicy: false }))
+app.use(helmet({ contentSecurityPolicy: false }))
 app.use(session(sessionConfig));
 app.engine("ejs", ejsMate)
 app.set("view engine", "ejs")

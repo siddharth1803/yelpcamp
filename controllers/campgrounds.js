@@ -3,10 +3,37 @@ const { cloudinary } = require("../cloudinary/index")
 const mbxGeocoding = require("@mapbox/mapbox-sdk/services/geocoding")
 const mapBoxToken = process.env.MAPBOX_TOKEN
 const geoCoder = mbxGeocoding({ accessToken: mapBoxToken })
+const ExpressError = require("../utils/ExpressError")
+const User = require("../models/user");
 
 module.exports.index = async (req, res) => {
-    let campgrounds = await Campground.find()
-    res.render("campgrounds/index", { campgrounds })
+
+    const { pno = 1, username } = req.params
+    const { query } = req.query
+    let start = 0
+    let originalUrl = req.originalUrl
+    let campgrounds = ""
+    if (query) {
+        const { page = 1 } = req.params
+        start = (page - 1) * 10
+        const regex = new RegExp(query, 'i')
+        campgrounds = await Campground.find({ $or: [{ title: regex }, { location: regex }] })
+    }
+    else {
+        if (username) {
+            start = (pno - 1) * 10
+            let userData = await User.findOne({ username: username })
+            if (userData == null)
+                throw new ExpressError("user not found", 404)
+            campgrounds = await Campground.find({ author: userData._id });
+        }
+        else {
+            campgrounds = await Campground.find()
+        }
+    }
+    const end = start + 10
+
+    res.render("campgrounds/index", { campgrounds, start, end, originalUrl, username })
 }
 
 module.exports.renderNewForm = (req, res) => {
@@ -30,10 +57,10 @@ module.exports.createCampground = async (req, res) => {
     }).send()
 
     if (geoData.body.features.length === 0) {
-        let files = req.files.map(f => f.filename)
-        for (let filename of files) {
-            await cloudinary.uploader.destroy(filename)
-        }
+        // let files = req.files.map(f => f.filename)
+        // for (let filename of files) {
+        //     await cloudinary.uploader.destroy(filename)
+        // }
         req.flash("error", "invalid location please try again")
         return res.redirect("/campgrounds/new")
     }

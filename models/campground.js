@@ -13,7 +13,11 @@ ImageSchema.virtual('thumbnail').get(function () {
 });
 
 ImageSchema.virtual('indexImage').get(function () {
-    return this.url.replace('/upload', '/upload/c_fill,w_1000,h_1000');
+    return this.url.replace('/upload', '/upload/c_fill,w_800,h_600');
+});
+
+ImageSchema.virtual('campImage').get(function () {
+    return this.url.replace('/upload', '/upload/c_fill,w_1000,h_800');
 });
 
 const CampgroundSchema = new Schema({
