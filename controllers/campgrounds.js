@@ -28,6 +28,7 @@ module.exports.index = async (req, res) => {
             campgrounds = await Campground.find({ author: userData._id });
         }
         else {
+            start = (pno - 1) * 10
             campgrounds = await Campground.find()
         }
     }
@@ -57,10 +58,6 @@ module.exports.createCampground = async (req, res) => {
     }).send()
 
     if (geoData.body.features.length === 0) {
-        // let files = req.files.map(f => f.filename)
-        // for (let filename of files) {
-        //     await cloudinary.uploader.destroy(filename)
-        // }
         req.flash("error", "invalid location please try again")
         return res.redirect("/campgrounds/new")
     }
@@ -76,8 +73,18 @@ module.exports.createCampground = async (req, res) => {
 
 module.exports.updateCampground = async (req, res) => {
     const { id } = req.params
+    let geoData = await geoCoder.forwardGeocode({
+        query: req.body.campground.location,
+        limit: 1
+    }).send()
+
+    if (geoData.body.features.length === 0) {
+        req.flash("error", "invalid location please try again")
+        return res.redirect(`/campgrounds/${id}/edit`)
+    }
     const campground = await Campground.findByIdAndUpdate(id, { ...req.body.campground })
     const images = req.files.map(f => ({ url: f.path, filename: f.filename }))
+    campground.geometry = geoData.body.features[0].geometry
     campground.images.push(...images)
     await campground.save()
     if (req.body.deleteImages) {

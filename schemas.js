@@ -6,7 +6,7 @@ module.exports.campgroundSchema = [
         .notEmpty().withMessage('Price is required')
         .isFloat({ min: 0 }).withMessage('Price must be a positive number'),
     body('campground.location')
-        .notEmpty().withMessage('Location is required'),
+        .notEmpty().withMessage('Location is required').escape(),
     body('campground.title')
         .notEmpty().withMessage('Title is required').escape(),
     body('campground.description')
